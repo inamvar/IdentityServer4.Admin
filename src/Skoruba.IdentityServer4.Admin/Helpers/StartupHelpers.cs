@@ -38,6 +38,15 @@ namespace Skoruba.IdentityServer4.Admin.Helpers
 {
     public static class StartupHelpers
     {
+
+        public static void ReadUrlsFromConfiguration(this IServiceCollection services, IConfigurationRoot configuration)
+        {
+            var section = configuration.GetSection(ConfigurationConsts.UrlsSectionKey);
+            AuthorizationConsts.IdentityAdminBaseUrl = section.GetValue<string>(ConfigurationConsts.IdentityAdminBaseUrl);
+            AuthorizationConsts.IdentityAdminRedirectUri = section.GetValue<string>(ConfigurationConsts.IdentityAdminRedirectUri);
+            AuthorizationConsts.IdentityServerBaseUrl = section.GetValue<string>(ConfigurationConsts.IdentityServerBaseUrl);
+        }
+
         public static void RegisterDbContexts(this IServiceCollection services, IConfigurationRoot configuration)
         {
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;

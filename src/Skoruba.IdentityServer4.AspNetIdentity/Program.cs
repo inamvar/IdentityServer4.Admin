@@ -12,6 +12,10 @@ namespace Skoruba.IdentityServer4.AspNetIdentity
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+                   .UseKestrel(c => c.AddServerHeader = false)
+                   .UseUrls("http://0.0.0.0:5050")
+                   .UseStartup<Startup>();
+                   
+             
     }
 }

@@ -5,6 +5,7 @@ using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Skoruba.IdentityServer4.Admin.Configuration;
 using Skoruba.IdentityServer4.Admin.Constants;
@@ -20,27 +21,34 @@ namespace Skoruba.IdentityServer4.Admin.Helpers
         /// Add-Migration DbInit -context AdminDbContext -output Data/Migrations
         /// </summary>
         /// <param name="host"></param>
-        public static async Task EnsureSeedData(IWebHost host)
+        public static async Task EnsureSeedData(IWebHost host, bool migrateOnly = false)
         {
             using (var serviceScope = host.Services.CreateScope())
             {
                 var services = serviceScope.ServiceProvider;
 
-                await EnsureSeedData(services);
+                await EnsureSeedData(services, migrateOnly);
             }
         }
 
-        public static async Task EnsureSeedData(IServiceProvider serviceProvider)
+        public static async Task EnsureSeedData(IServiceProvider serviceProvider, bool migrateOnly)
         {
             using (var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<AdminDbContext>();
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserIdentity>>();
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<UserIdentityRole>>();
-
+                var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+                var section = configuration.GetSection(ConfigurationConsts.UrlsSectionKey);
+                AuthorizationConsts.IdentityAdminBaseUrl = section.GetValue<string>(ConfigurationConsts.IdentityAdminBaseUrl);
+                AuthorizationConsts.IdentityAdminRedirectUri = section.GetValue<string>(ConfigurationConsts.IdentityAdminRedirectUri);
+                AuthorizationConsts.IdentityServerBaseUrl = section.GetValue<string>(ConfigurationConsts.IdentityServerBaseUrl);
                 context.Database.Migrate();
-                await EnsureSeedIdentityServerData(context);
-                await EnsureSeedIdentityData(userManager, roleManager);
+                if (!migrateOnly)
+                {
+                    await EnsureSeedIdentityServerData(context);
+                    await EnsureSeedIdentityData(userManager, roleManager);
+                }
             }
         }
 

@@ -8,9 +8,9 @@ namespace Skoruba.IdentityServer4.Admin.Constants
         public const string AdministrationRole = "SkorubaIdentityAdminAdministrator";
 
         public const string IdentityAdminCookieName = "IdentityServerAdmin";        
-        public const string IdentityAdminRedirectUri = "http://localhost:9000/signin-oidc";
-        public const string IdentityServerBaseUrl = "http://localhost:5000";
-        public const string IdentityAdminBaseUrl = "http://localhost:9000";
+        public static string IdentityAdminRedirectUri = "http://localhost:9000/signin-oidc";
+        public static string IdentityServerBaseUrl = "http://localhost:5050";
+        public static string IdentityAdminBaseUrl = "http://localhost:9000";
 
         public const string UserNameClaimType = "name";
         public const string SignInScheme = "Cookies";
